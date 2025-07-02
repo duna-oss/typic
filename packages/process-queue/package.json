@@ -1,0 +1,40 @@
+{
+  "name": "@typic/process-queue",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Various process queue implementations",
+  "exports": {
+    ".": {
+      "import": "dist/index.js",
+      "types": "dist/index.d.ts"
+    },
+    "./concurrent": {
+      "import": "dist/concurrent.js",
+      "types": "dist/concurrent.d.ts"
+    },
+    "./partitioned": {
+      "import": "dist/concurrent.js",
+      "types": "dist/concurrent.d.ts"
+    }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "files": [
+    "package.json",
+    "dist"
+  ],
+  "keywords": [
+    "queue",
+    "process-queue",
+    "processing",
+    "worker"
+  ],
+  "author": "Frank de Jonge (https://frankdejonge.nl)",
+  "license": "MIT",
+  "packageManager": "pnpm@10.12.4",
+  "dependencies": {
+    "@typic/exposed-promise": "workspace:^",
+    "@typic/wait-group": "workspace:^"
+  }
+}

@@ -1,0 +1,9 @@
+onlyBuiltDependencies:
+  - esbuild
+
+preferWorkspacePackages: true
+linkWorkspacePackages: true
+recursiveInstall: true
+
+packages:
+  - 'packages/*'

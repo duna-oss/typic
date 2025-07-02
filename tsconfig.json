@@ -1,0 +1,27 @@
+{
+  "include": [
+    "./**/*.ts"
+  ],
+  "exclude": [
+    "**/*.test.ts",
+    "node_modules",
+    "dist"
+  ],
+  "compilerOptions": {
+    "esModuleInterop": false,
+    "declaration": true,
+    "skipLibCheck": true,
+    "lib": ["es2023"],
+    "module": "node16",
+    "target": "es2022",
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": [
+      "node",
+      "vitest/globals"
+    ],
+    "paths": {
+      "@typic/*": ["./packages/*/src/index.ts"]
+    }
+  }
+}
