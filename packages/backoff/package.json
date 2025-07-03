@@ -1,8 +1,8 @@
 {
-  "name": "@typic/exposed-promise",
+  "name": "@typic/backoff",
   "type": "module",
   "version": "0.0.0",
-  "description": "An externally controllable promise",
+  "description": "A strategy based back-off calculator",
   "files": [
     "package.json",
     "dist"
@@ -11,6 +11,14 @@
     ".": {
       "import": "dist/index.js",
       "types": "dist/index.d.ts"
+    },
+    "./exponential": {
+      "import": "dist/exponential.js",
+      "types": "dist/exponential.d.ts"
+    },
+    "./linear": {
+      "import": "dist/linear.js",
+      "types": "dist/linear.d.ts"
     }
   },
   "keywords": ["promise"],
