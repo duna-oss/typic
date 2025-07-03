@@ -21,7 +21,7 @@
       "types": "dist/linear.d.ts"
     }
   },
-  "keywords": ["promise"],
+  "keywords": ["backoff", "exponential"],
   "scripts": {},
   "author": "Frank de Jonge (https://frankdejonge.nl)",
   "license": "MIT",
