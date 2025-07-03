@@ -30,7 +30,11 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@24.0.7)(jiti@2.4.2)
 
-  packages/backoff: {}
+  packages/backoff:
+    dependencies:
+      '@typic/error-standard':
+        specifier: workspace:^
+        version: link:../error-standard
 
   packages/error-standard: {}
 

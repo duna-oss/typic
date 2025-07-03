@@ -21,9 +21,15 @@
       "types": "dist/linear.d.ts"
     }
   },
-  "keywords": ["backoff", "exponential"],
+  "keywords": [
+    "backoff",
+    "exponential"
+  ],
   "scripts": {},
   "author": "Frank de Jonge (https://frankdejonge.nl)",
   "license": "MIT",
-  "packageManager": "pnpm@10.12.4"
+  "packageManager": "pnpm@10.12.4",
+  "dependencies": {
+    "@typic/error-standard": "workspace:^"
+  }
 }
