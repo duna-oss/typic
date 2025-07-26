@@ -1,3 +1,7 @@
-.idea
-packages/*/dist
+# root ignores
+/.idea
+/.data
+/packages/*/dist
+
+# ignore patterns
 node_modules

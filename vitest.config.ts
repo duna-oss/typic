@@ -8,7 +8,7 @@ export default defineConfig({
     resolve: {
         alias: [
             {
-                find: /^@typic\/(.*)$/,
+                find: /^@\/(.*)$/,
                 replacement: join(new URL(import.meta.url).pathname, '../packages', '$1', 'src/index.ts'),
             },
         ],

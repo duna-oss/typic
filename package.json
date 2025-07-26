@@ -5,14 +5,21 @@
   "scripts": {
     "prepublish": "build",
     "test": "vitest run",
-    "build": "tsdown"
+    "build": "tsdown",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix"
   },
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
     "@changesets/cli": "^2.29.5",
+    "@eslint/js": "^9.30.1",
     "@types/node": "^24.0.7",
+    "eslint": "^9.30.1",
     "tsdown": "^0.12.9",
     "typescript": "^5.8.3",
+    "typescript-eslint": "^8.35.1",
     "vite": "^7.0.0",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"

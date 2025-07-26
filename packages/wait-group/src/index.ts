@@ -1,4 +1,4 @@
-import {exposedPromise} from '@typic/exposed-promise';
+import {exposedPromise} from '@deltic/exposed-promise';
 
 export type Waiter = () => void;
 

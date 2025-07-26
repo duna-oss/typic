@@ -22,9 +22,9 @@ await Promise.all(packageDirectories.map(async name => {
         const destination = resolve(import.meta.dirname, 'packages', name, sourceFile);
 
         if (key === '.') {
-            aliases[`@typic/${name}`] = destination;
+            aliases[`@deltic/${name}`] = destination;
         } else if (key.startsWith('./')) {
-            aliases[`@typic/${name}/${key.substring(2)}`] = destination;
+            aliases[`@deltic/${name}/${key.substring(2)}`] = destination;
         }
     }
 
@@ -35,8 +35,9 @@ export default [
     ...packageDirectories.map(dirname => {
         return defineConfig({
             sourcemap: true,
+            // workspace: true,
             dts: true,
-            external: [/^@typic\//],
+            external: [/^@deltic\//],
             alias: aliases,
             skipNodeModulesBundle: true,
             entry: sources[dirname] ?? [],

@@ -1,5 +1,5 @@
 {
-  "name": "@typic/error-standard",
+  "name": "@deltic/error-standard",
   "type": "module",
   "version": "0.0.0",
   "description": "A standard error that adds error codes, context, and previous errors.",
