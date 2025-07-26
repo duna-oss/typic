@@ -79,10 +79,10 @@ describe.each([
     test('it calls an onError hook that receives thrown errors', async () => {
         let errors = 0;
         const processQueue = factory({
-            onError: async ({error, queue}) => {
+            onError: async () => {
                 errors = 1;
             },
-            processor: async (task: string) => {
+            processor: async () => {
                 throw new Error('no!');
             },
         });
@@ -96,11 +96,11 @@ describe.each([
     test('it calls an onError hook when a promise is rejected', async () => {
         let errors = 0;
         const processQueue = factory({
-            onError: async ({error, queue}) => {
+            onError: async ({queue}) => {
                 errors++;
                 await queue.stop();
             },
-            processor: (task) => new Promise((resolve, reject) => reject(new Error('reason'))),
+            processor: () => new Promise((_resolve, reject) => reject(new Error('reason'))),
         });
         processQueue.push('a').catch(() => {
         });
@@ -111,12 +111,12 @@ describe.each([
     test('when an error happens, the task is retried', async () => {
         let tries = 0;
         const processQueue = factory({
-            onError: async ({error, queue, tries}) => {
+            onError: async ({queue, tries}) => {
                 if (tries > 5) {
                     await queue.stop();
                 }
             },
-            processor: async (task) => {
+            processor: async () => {
                 tries++;
                 throw new Error('failing');
             },
@@ -131,10 +131,10 @@ describe.each([
     test('a task can be skipped on error', async () => {
         let tries = 0;
         const processQueue = factory({
-            onError: async ({error, queue, skipCurrentTask}) => {
+            onError: async ({skipCurrentTask}) => {
                 skipCurrentTask();
             },
-            processor: async (task) => {
+            processor: async () => {
                 tries++;
                 throw new Error('failing');
             },
@@ -148,10 +148,10 @@ describe.each([
 
     test('skipping on error rejects the promise', async () => {
         const processQueue = factory({
-            onError: async ({error, queue, skipCurrentTask}) => {
+            onError: async ({skipCurrentTask}) => {
                 skipCurrentTask();
             },
-            processor: async (task) => {
+            processor: async () => {
                 throw new Error('failing');
             },
         });
@@ -163,10 +163,10 @@ describe.each([
     test('stopping the queue in the same event loop cycle prevents tasks from being processed', async () => {
         let processed = 0;
         const processQueue = factory({
-            onError: async ({error, queue, skipCurrentTask}) => {
+            onError: async ({skipCurrentTask}) => {
                 skipCurrentTask();
             },
-            processor: async (task) => {
+            processor: async () => {
                 processed++;
             },
         });
@@ -181,7 +181,7 @@ describe.each([
         const processQueue = factory({
             onError: async () => {
             },
-            processor: async (task) => {
+            processor: async () => {
                 tries++;
             },
         });
@@ -199,7 +199,7 @@ describe.each([
             onFinish: async () => {
                 called = true;
             },
-            processor: async (task) => {
+            processor: async () => {
             },
         });
         processQueue.push('something');
@@ -214,10 +214,10 @@ describe.each([
             onError: async ({skipCurrentTask}) => {
                 skipCurrentTask();
             },
-            onFinish: async (task) => {
+            onFinish: async () => {
                 called = true;
             },
-            processor: async (task) => {
+            processor: async () => {
                 throw new Error('oh no');
             },
         });
@@ -236,10 +236,10 @@ describe('@deltic/process-queue SequentialProcessQueue', () => {
     test('stopping the queue waits on the current job in progress', async () => {
         let tries = 0;
         const processQueue = new SequentialProcessQueue({
-            onError: async ({error, queue, skipCurrentTask}) => {
+            onError: async ({skipCurrentTask}) => {
                 skipCurrentTask();
             },
-            processor: async (task) => {
+            processor: async () => {
                 tries++;
                 await wait(100);
             },

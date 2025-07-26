@@ -1,13 +1,13 @@
 import {type ProcessQueue, ProcessQueueDefaults, ProcessQueueOptions} from './api.js';
 import {type ProcessStackItem} from './internals.js';
-import {WaitGroup} from '@typic/wait-group';
-import {exposedPromise} from '@typic/exposed-promise';
+import {WaitGroup} from '@deltic/wait-group';
+import {exposedPromise} from '@deltic/exposed-promise';
 
 export class ConcurrentProcessQueue<Task> implements ProcessQueue<Task> {
     private stack: ProcessStackItem<Task>[] = [];
     private running: boolean = true;
     private processing: number = 0;
-    private timer: any | false = false;
+    private timer: ReturnType<typeof setImmediate>| undefined = undefined;
     private config: Required<ProcessQueueOptions<Task>>;
     private maxProcessing: number;
     private waitGroup: WaitGroup = new WaitGroup();
@@ -37,7 +37,7 @@ export class ConcurrentProcessQueue<Task> implements ProcessQueue<Task> {
 
     private scheduleNextTask(): void {
         /* istanbul ignore else  */
-        if (this.running && this.timer === false && this.processing < this.maxProcessing) {
+        if (this.running && this.timer === undefined && this.processing < this.maxProcessing) {
             this.timer = setImmediate(this.processNextTask);
         }
     }
@@ -48,7 +48,7 @@ export class ConcurrentProcessQueue<Task> implements ProcessQueue<Task> {
     }
 
     private processNextTask(): void {
-        this.timer = false;
+        this.timer = undefined;
         const next = this.stack.find(i => i.processing !== true);
         /* istanbul ignore else  */
         if (next !== undefined) {

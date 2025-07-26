@@ -1,5 +1,5 @@
 {
-  "name": "@typic/process-queue",
+  "name": "@deltic/process-queue",
   "version": "0.0.0",
   "type": "module",
   "description": "Various process queue implementations",
@@ -13,8 +13,8 @@
       "types": "dist/concurrent.d.ts"
     },
     "./partitioned": {
-      "import": "dist/concurrent.js",
-      "types": "dist/concurrent.d.ts"
+      "import": "dist/partitioned.js",
+      "types": "dist/partitioned.d.ts"
     }
   },
   "scripts": {
@@ -34,7 +34,7 @@
   "license": "MIT",
   "packageManager": "pnpm@10.12.4",
   "dependencies": {
-    "@typic/exposed-promise": "workspace:^",
-    "@typic/wait-group": "workspace:^"
+    "@deltic/exposed-promise": "workspace:^",
+    "@deltic/wait-group": "workspace:^"
   }
 }

@@ -1,6 +1,6 @@
 import {type ProcessQueue, ProcessQueueDefaults, ProcessQueueOptions} from './api.js';
 import {type ProcessStackItem} from './internals.js';
-import {exposedPromise} from '@typic/exposed-promise';
+import {exposedPromise} from '@deltic/exposed-promise';
 
 export class SequentialProcessQueue<Task> implements ProcessQueue<Task>{
     private nextTick: undefined | (() => void) = undefined;
@@ -72,7 +72,7 @@ export class SequentialProcessQueue<Task> implements ProcessQueue<Task>{
         return promise;
     }
 
-    private async handleProcessorResult(err: any): Promise<void> {
+    private async handleProcessorResult(err: unknown): Promise<void> {
         this.processing = false;
         const {task, resolve, reject, tries} = this.tasks[0];
 

@@ -8,7 +8,7 @@ export interface ProcessQueue<Task> {
 }
 
 export type ErrorContext<Task> = {
-    error: Error,
+    error: unknown,
     task: Task,
     tries: number,
     skipCurrentTask: () => void,
