@@ -1,4 +1,4 @@
-import {StandardError} from '@typic/error-standard';
+import {StandardError} from '@deltic/error-standard';
 
 export interface BackOffStrategy {
     // Returns the delay to use for the next try, or undefined if max tries has been exceeded

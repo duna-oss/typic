@@ -1,5 +1,5 @@
 {
-  "name": "@typic/backoff",
+  "name": "@deltic/backoff",
   "type": "module",
   "version": "0.0.0",
   "description": "A strategy based back-off calculator",
@@ -30,6 +30,6 @@
   "license": "MIT",
   "packageManager": "pnpm@10.12.4",
   "dependencies": {
-    "@typic/error-standard": "workspace:^"
+    "@deltic/error-standard": "workspace:^"
   }
 }
