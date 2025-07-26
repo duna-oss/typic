@@ -1,0 +1,91 @@
+import {Pool} from 'pg';
+import {PgConnectionProvider, PgConnectionProviderWithPool} from './index.js';
+
+describe('PgConnectionProvider', () => {
+    let pool: Pool;
+    let provider: PgConnectionProvider;
+    const factoryWithPool = (() => new PgConnectionProviderWithPool(pool));
+
+    beforeAll(async () => {
+        pool = new Pool({
+            host: 'localhost',
+            user: 'duna',
+            password: 'duna',
+            port: 35432,
+            max: 50,
+            idleTimeoutMillis: 30000,
+            connectionTimeoutMillis: 2000,
+            maxLifetimeSeconds: 60,
+        });
+    });
+
+    afterAll(async () => {
+        await pool.end();
+    });
+
+    describe.each([
+        ['pool', factoryWithPool],
+    ] as const)('basics for %s', (_name, factory) => {
+        beforeEach(() => {
+            provider = factory();
+        });
+
+        test('smoketest, acquiring a primconnection', async () => {
+            const connection = provider.primaryConnection();
+            const result = await connection.query('SELECT 1 as num');
+            expect(result.rowCount).toEqual(1);
+            expect(result.rows[0].num).toEqual(1);
+        });
+
+        test('smoketest, claiming a client', async () => {
+            const client = await provider.claim();
+
+            try {
+                const result = await client.query('SELECT 1 as num');
+                expect(result.rowCount).toEqual(1);
+                expect(result.rows[0].num).toEqual(1);
+            } finally {
+                provider.release(client);
+            }
+        });
+
+        test('smoketest, using a plain transaction', async () => {
+            const client = await provider.begin();
+
+            try {
+                const result = await client.query('SELECT 1 as num');
+                expect(result.rowCount).toEqual(1);
+                expect(result.rows[0].num).toEqual(1);
+            } finally {
+                await provider.commit(client);
+            }
+        });
+    });
+
+    describe.each([
+        ['pool', factoryWithPool],
+    ] as const)('transactional behaviour using %s', (name, factory) => {
+        const tableName = `transactions_test_for_${name.toLowerCase().replace(/ /g, '_')}`;
+
+        beforeAll(async () => {
+            provider = factory();
+            await pool.query(`
+                CREATE TABLE ${tableName} (
+                    identifier TEXT UNIQUE NOT NULL,
+                    name TEXT NOT NULL,
+                    age INTEGER
+                );
+            `);
+        });
+
+        test('beginning and committing a transaction', async () => {
+            const connection = await provider.begin();
+
+            await provider.commit(connection);
+        });
+
+        afterAll(async () => {
+            await pool.query(`DROP TABLE ${tableName}`);
+        });
+    });
+});

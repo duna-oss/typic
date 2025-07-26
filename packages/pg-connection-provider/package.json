@@ -1,0 +1,31 @@
+{
+  "name": "@deltic/pg-connection-provider",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "An opinionated interface to acquire connections from Postgres",
+  "files": [
+    "package.json",
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "dist/index.js",
+      "types": "dist/index.d.ts"
+    }
+  },
+  "keywords": [
+    "errors",
+    "error"
+  ],
+  "scripts": {},
+  "author": "Frank de Jonge (https://frankdejonge.nl)",
+  "license": "MIT",
+  "packageManager": "pnpm@10.12.4",
+  "dependencies": {
+    "@deltic/mutex": "workspace:^",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.4"
+  }
+}
