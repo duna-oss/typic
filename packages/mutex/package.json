@@ -1,0 +1,35 @@
+{
+  "name": "@deltic/mutex",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "A standard error that adds error codes, context, and previous errors.",
+  "files": [
+    "package.json",
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "dist/index.js",
+      "types": "dist/index.d.ts"
+    },
+    "./memory": {
+      "import": "dist/memory-mutex.js",
+      "types": "dist/memory-mutex.d.ts"
+    },
+    "./static-memory-mutex": {
+      "import": "dist/static-memory-mutex.js",
+      "types": "dist/static-memory-mutex.d.ts"
+    }
+  },
+  "keywords": [
+    "errors",
+    "error"
+  ],
+  "scripts": {},
+  "author": "Frank de Jonge (https://frankdejonge.nl)",
+  "license": "MIT",
+  "packageManager": "pnpm@10.12.4",
+  "dependencies": {
+    "@deltic/exposed-promise": "workspace:^"
+  }
+}
