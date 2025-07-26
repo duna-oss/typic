@@ -11,7 +11,9 @@
     "esModuleInterop": false,
     "declaration": true,
     "skipLibCheck": true,
-    "lib": ["es2023"],
+    "lib": [
+      "es2023"
+    ],
     "module": "node16",
     "target": "es2022",
     "strict": true,
@@ -21,7 +23,10 @@
       "vitest/globals"
     ],
     "paths": {
-      "@typic/*": ["./packages/*/src/index.ts"]
+      "@deltic/mutex/static-memory-mutex": ["./packages/mutex/src/static-memory-mutex.ts"],
+      "@deltic/*": [
+        "./packages/*/src/index.ts"
+      ]
     }
   }
 }
