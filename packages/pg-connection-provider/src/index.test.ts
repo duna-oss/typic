@@ -31,7 +31,7 @@ describe('PgConnectionProvider', () => {
             host: 'localhost',
             user: 'duna',
             password: 'duna',
-            port: 35432,
+            port: Number(process.env.POSTGRES_POST ?? 35432),
             max: 50,
             idleTimeoutMillis: 30000,
             connectionTimeoutMillis: 2000,

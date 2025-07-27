@@ -4,6 +4,8 @@ on:
 
 jobs:
   build:
+    env:
+      POSTGRES_PORT: 35432
     runs-on: ubuntu-latest
     strategy:
       matrix:
