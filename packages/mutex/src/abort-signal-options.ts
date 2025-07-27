@@ -6,8 +6,8 @@ export type LockOptions = {
 /**
  * @internal
  */
-export function resolveOptions(options: LockOptions): LockOptions {
-    let abortSignal: AbortSignal | undefined = options.abortSignal;
+export function resolveOptions(options: LockOptions = {}): LockOptions {
+    let abortSignal: AbortSignal | undefined = options?.abortSignal;
 
     if (options.timeout) {
         abortSignal = options.abortSignal

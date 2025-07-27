@@ -3,14 +3,14 @@ import {LockOptions} from './abort-signal-options.js';
 export type {LockOptions};
 
 export interface StaticMutex {
-    tryLock(options: LockOptions): Promise<boolean>;
-    lock(options: LockOptions): Promise<void>;
+    tryLock(options?: LockOptions): Promise<boolean>;
+    lock(options?: LockOptions): Promise<void>;
     unlock(): Promise<void>;
 }
 
 export interface DynamicMutex<LockID> {
-    tryLock(id: LockID, options: LockOptions): Promise<boolean>;
-    lock(id: LockID, options: LockOptions): Promise<void>;
+    tryLock(id: LockID, options?: LockOptions): Promise<boolean>;
+    lock(id: LockID, options?: LockOptions): Promise<void>;
     unlock(id: LockID): Promise<void>;
 }
 

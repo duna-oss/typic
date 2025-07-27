@@ -6,7 +6,7 @@ export class MutexUsingMemory<LockID> implements DynamicMutex<LockID> {
     private readonly locks = new Map<LockID, true>();
     private waiters: ExposedPromise<void>[] = [];
 
-    async lock(id: LockID, options: LockOptions): Promise<void> {
+    async lock(id: LockID, options: LockOptions = {}): Promise<void> {
         const opt = resolveOptions(options);
 
         if (this.tryLockSync(id)) {

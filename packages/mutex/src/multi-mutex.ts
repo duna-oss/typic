@@ -5,7 +5,7 @@ export class MultiMutex<LockID> implements DynamicMutex<LockID> {
     }
 
 
-    async lock(id: LockID, options: LockOptions): Promise<void> {
+    async lock(id: LockID, options: LockOptions = {}): Promise<void> {
         const start = process.hrtime.bigint();
         let timeLeft = options.timeout;
         const lockedMutexes: DynamicMutex<LockID>[] = [];
@@ -15,7 +15,7 @@ export class MultiMutex<LockID> implements DynamicMutex<LockID> {
                 await mutex.lock(id, {...options, timeout: timeLeft});
                 // unshift to unlock in reverse order
                 lockedMutexes.unshift(mutex);
-                timeLeft = options.timeout - hrTimeToMs(process.hrtime.bigint() - start);
+                timeLeft = options.timeout ? - hrTimeToMs(process.hrtime.bigint() - start) : undefined;
             } catch (error) {
                 for (const lockedMutex of lockedMutexes) {
                     await lockedMutex.unlock(id);
@@ -26,7 +26,7 @@ export class MultiMutex<LockID> implements DynamicMutex<LockID> {
         }
     }
 
-    async tryLock(id: LockID, options: LockOptions): Promise<boolean> {
+    async tryLock(id: LockID, options: LockOptions = {}): Promise<boolean> {
         let locked: boolean = true;
         const lockedMutexes: DynamicMutex<LockID>[] = [];
 

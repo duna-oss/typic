@@ -1,10 +1,30 @@
 import {Pool} from 'pg';
-import {PgConnectionProvider, PgConnectionProviderWithPool} from './index.js';
+import {
+    AsyncPgTransactionContextProvider,
+    PgConnectionProvider,
+    PgConnectionProviderWithPool,
+    PgTransactionContext,
+} from './index.js';
+import {AsyncLocalStorage} from 'node:async_hooks';
+import {StaticMutexUsingMemory} from '@deltic/mutex/static-memory-mutex';
 
 describe('PgConnectionProvider', () => {
     let pool: Pool;
     let provider: PgConnectionProvider;
-    const factoryWithPool = (() => new PgConnectionProviderWithPool(pool));
+    const asyncLocalStorage = new AsyncLocalStorage<PgTransactionContext>();
+    const factoryWithStaticPool = () => new PgConnectionProviderWithPool(pool);
+    const factoryWithAsyncPool = () => {
+        asyncLocalStorage.enterWith({
+            exclusiveAccess: new StaticMutexUsingMemory(),
+        });
+        return new PgConnectionProviderWithPool(
+            pool,
+            {shareTransactions: true},
+            new AsyncPgTransactionContextProvider(
+                asyncLocalStorage,
+            ),
+        );
+    };
 
     beforeAll(async () => {
         pool = new Pool({
@@ -24,7 +44,8 @@ describe('PgConnectionProvider', () => {
     });
 
     describe.each([
-        ['pool', factoryWithPool],
+        ['pool, static transaction context', factoryWithStaticPool],
+        ['pool, async transaction context', factoryWithAsyncPool],
     ] as const)('basics for %s', (_name, factory) => {
         beforeEach(() => {
             provider = factory();
@@ -63,7 +84,7 @@ describe('PgConnectionProvider', () => {
     });
 
     describe.each([
-        ['pool', factoryWithPool],
+        ['pool', factoryWithStaticPool],
     ] as const)('transactional behaviour using %s', (name, factory) => {
         const tableName = `transactions_test_for_${name.toLowerCase().replace(/ /g, '_')}`;
 

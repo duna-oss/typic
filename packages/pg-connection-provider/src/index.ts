@@ -1,6 +1,7 @@
 import type {Pool, PoolClient} from 'pg';
 import {StaticMutexUsingMemory} from '@deltic/mutex/static-memory-mutex';
-// import {AsyncLocalStorage} from 'node:async_hooks';
+import {AsyncLocalStorage} from 'node:async_hooks';
+import {StaticMutex} from '@deltic/mutex';
 
 export type Connection = PoolClient | Pool;
 
@@ -21,17 +22,60 @@ export interface PgConnectionProvider {
     rollback(client: PoolClient): Promise<void>;
 }
 
-export class PgConnectionProviderWithPool implements PgConnectionProvider {
+export interface PgTransactionContext {
+    exclusiveAccess: StaticMutex,
+    sharedTransaction?: Connection | undefined,
+}
+
+export interface PgTransactionContextProvider {
+    resolve(): PgTransactionContext;
+}
+
+export class StaticPgTransactionContextProvider implements PgTransactionContextProvider {
     private exclusiveAccess = new StaticMutexUsingMemory();
     private sharedTransaction: PoolClient | undefined;
 
+    resolve(): PgTransactionContext {
+        return {
+            exclusiveAccess: this.exclusiveAccess,
+            sharedTransaction: this.sharedTransaction,
+        };
+    }
+}
+
+export class AsyncPgTransactionContextProvider implements PgTransactionContextProvider {
+    constructor(
+        private readonly store: AsyncLocalStorage<PgTransactionContext> = new AsyncLocalStorage<PgTransactionContext>(),
+    ) {
+    }
+
+    resolve(): PgTransactionContext {
+        const context = this.store.getStore();
+
+        if (!context) {
+            throw new Error('No transaction context set, did you forget a .run call?');
+        }
+
+        return context;
+    }
+
+    run<R>(callback: () => R): R {
+        return this.store.run({
+            exclusiveAccess: new StaticMutexUsingMemory(),
+            sharedTransaction: undefined,
+        }, callback);
+    }
+}
+
+export class PgConnectionProviderWithPool implements PgConnectionProvider {
     constructor(
         private readonly pool: Pool,
         private readonly options: {
-            shareTransactions?: boolean,
+            shareTransactions: boolean,
         } = {
             shareTransactions: true,
         },
+        private readonly context: PgTransactionContextProvider =  new StaticPgTransactionContextProvider(),
     ) {
     }
 
@@ -40,16 +84,36 @@ export class PgConnectionProviderWithPool implements PgConnectionProvider {
     }
 
     async begin(query?: string): Promise<PoolClient> {
-        await this.exclusiveAccess.lock({});
-        const client = await this.claim();
+        if (!this.options.shareTransactions) {
+            const client = await this.claim();
 
-        await client.query(query ?? 'BEGIN');
+            try {
+                await client.query(query ?? 'BEGIN');
 
-        if (this.options.shareTransactions) {
-            this.sharedTransaction = client;
+                return client;
+            } catch (e) {
+                this.release(client);
+
+                throw e;
+            }
         }
 
-        return client;
+        const context = this.context.resolve();
+        await context.exclusiveAccess.lock();
+
+        try {
+            const client = await this.claim();
+
+            await client.query(query ?? 'BEGIN');
+
+            if (this.options.shareTransactions) {
+                context.sharedTransaction = client;
+            }
+
+            return client;
+        } finally {
+            context.exclusiveAccess.unlock();
+        }
     }
 
     async commit(client: PoolClient): Promise<void> {
@@ -57,7 +121,7 @@ export class PgConnectionProviderWithPool implements PgConnectionProvider {
             await client.query('COMMIT');
         } finally {
             this.release(client);
-            this.sharedTransaction = undefined;
+            this.context.resolve().sharedTransaction = undefined;
         }
     }
 
@@ -66,12 +130,12 @@ export class PgConnectionProviderWithPool implements PgConnectionProvider {
             await client.query('ROLLBACK');
         } finally {
             this.release(client);
-            this.sharedTransaction = undefined;
+            this.context.resolve().sharedTransaction = undefined;
         }
     }
 
     primaryConnection(): Connection {
-        return this.sharedTransaction ?? this.pool;
+        return this.context.resolve().sharedTransaction ?? this.pool;
     }
 
     secondaryConnection(): Connection {
@@ -82,16 +146,4 @@ export class PgConnectionProviderWithPool implements PgConnectionProvider {
         client.release();
     }
 }
-
-
-
-// export class PGConnectionProviderWithAsyncLocalStorage implements PgConnectionProvider {
-//
-//     constructor(
-//         private readonly pool: PoolClient,
-//         private readonly storage: AsyncLocalStorage<{}>
-//     ) {
-//
-//     }
-// }
 
