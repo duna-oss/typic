@@ -8,11 +8,9 @@ import {
 import {AsyncLocalStorage} from 'node:async_hooks';
 import {StaticMutexUsingMemory} from '@deltic/mutex/static-memory-mutex';
 
-const asyncLocalStorage = new AsyncLocalStorage<PgTransactionContext>({
-    defaultValue: {
-        exclusiveAccess: new StaticMutexUsingMemory(),
-    },
-});
+const asyncLocalStorage = new AsyncLocalStorage<PgTransactionContext>();
+
+const setupContext = () => asyncLocalStorage.enterWith({exclusiveAccess: new StaticMutexUsingMemory()});
 
 describe('PgConnectionProvider', () => {
     let pool: Pool;
@@ -54,6 +52,8 @@ describe('PgConnectionProvider', () => {
         });
 
         test('smoketest, acquiring a primconnection', async () => {
+            setupContext();
+
             const connection = provider.primaryConnection();
             const result = await connection.query('SELECT 1 as num');
             expect(result.rowCount).toEqual(1);
@@ -61,6 +61,8 @@ describe('PgConnectionProvider', () => {
         });
 
         test('smoketest, claiming a client', async () => {
+            setupContext();
+
             const client = await provider.claim();
 
             try {
@@ -73,6 +75,8 @@ describe('PgConnectionProvider', () => {
         });
 
         test('smoketest, using a plain transaction', async () => {
+            setupContext();
+
             const client = await provider.begin();
 
             try {
@@ -102,6 +106,8 @@ describe('PgConnectionProvider', () => {
         });
 
         test('beginning and committing a transaction', async () => {
+            setupContext();
+
             const connection = await provider.begin();
 
             await provider.commit(connection);
