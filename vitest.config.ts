@@ -22,6 +22,9 @@ export default defineConfig({
         include: ['packages/*/src/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
         globals: true,
         clearMocks: false,
+        env: {
+            POSTGRES_PORT: process.env.POSTGRES_PORT ?? '35432',
+        },
         // setupFiles: ['dotenv/config'],
 
         // profiling
