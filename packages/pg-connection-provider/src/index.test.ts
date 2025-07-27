@@ -8,9 +8,10 @@ import {
 import {AsyncLocalStorage} from 'node:async_hooks';
 import {StaticMutexUsingMemory} from '@deltic/mutex/static-memory-mutex';
 
-const asyncLocalStorage = new AsyncLocalStorage<PgTransactionContext>();
-asyncLocalStorage.enterWith({
-    exclusiveAccess: new StaticMutexUsingMemory(),
+const asyncLocalStorage = new AsyncLocalStorage<PgTransactionContext>({
+    defaultValue: {
+        exclusiveAccess: new StaticMutexUsingMemory(),
+    },
 });
 
 describe('PgConnectionProvider', () => {
