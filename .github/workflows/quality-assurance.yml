@@ -12,6 +12,8 @@ jobs:
       postgres:
         image: postgres:17.5-alpine3.22
         options: --name postgres
+        ports:
+          - '35432:5432'
         env:
           POSTGRES_DB: 'duna'
           POSTGRES_USER: 'duna'
