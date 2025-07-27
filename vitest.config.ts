@@ -8,6 +8,10 @@ export default defineConfig({
     resolve: {
         alias: [
             {
+                find: '@deltic/mutex/static-memory-mutex',
+                replacement: join(new URL(import.meta.url).pathname, '../packages/mutex/src/static-memory-mutex.ts'),
+            },
+            {
                 find: /^@\/(.*)$/,
                 replacement: join(new URL(import.meta.url).pathname, '../packages', '$1', 'src/index.ts'),
             },

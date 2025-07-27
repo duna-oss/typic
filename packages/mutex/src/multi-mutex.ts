@@ -15,7 +15,7 @@ export class MultiMutex<LockID> implements DynamicMutex<LockID> {
                 await mutex.lock(id, {...options, timeout: timeLeft});
                 // unshift to unlock in reverse order
                 lockedMutexes.unshift(mutex);
-                timeLeft = options.timeout ? - hrTimeToMs(process.hrtime.bigint() - start) : undefined;
+                timeLeft = options.timeout ? options.timeout - hrTimeToMs(process.hrtime.bigint() - start) : undefined;
             } catch (error) {
                 for (const lockedMutex of lockedMutexes) {
                     await lockedMutex.unlock(id);
